@@ -17,16 +17,16 @@ app.get('/', (req: Request, res: Response) => {
       health: '/health',
       api: '/api',
       movies: '/api/movies',
-      weather: '/api/weather'
-    }
+      weather: '/api/weather',
+    },
   });
 });
 
 app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ 
-    status: 'OK', 
+  res.status(200).json({
+    status: 'OK',
     message: 'Movies Weather Backend is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -38,8 +38,8 @@ app.get('/api', (req: Request, res: Response) => {
       'GET /health',
       'GET /api',
       'GET /api/movies',
-      'GET /api/weather'
-    ]
+      'GET /api/weather',
+    ],
   });
 });
 
@@ -47,7 +47,7 @@ app.get('/api', (req: Request, res: Response) => {
 app.get('/api/movies', (req: Request, res: Response) => {
   res.json({
     message: 'Movies endpoint - Coming soon!',
-    data: []
+    data: [],
   });
 });
 
@@ -55,7 +55,7 @@ app.get('/api/movies', (req: Request, res: Response) => {
 app.get('/api/weather', (req: Request, res: Response) => {
   res.json({
     message: 'Weather endpoint - Coming soon!',
-    data: []
+    data: [],
   });
 });
 
