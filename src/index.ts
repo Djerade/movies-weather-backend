@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
-import { schema } from './graphql/schema';
+import { typeDefs } from './graphql/schema';
+import { resolvers } from './graphql/resolvers';
 import process from 'process';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
@@ -15,6 +16,11 @@ async function startServer() {
   await connectDB();
 
 
+
+  const schema = makeExecutableSchema({
+    typeDefs,
+    resolvers,
+  });
 
   const server = createYoga({
     schema: schema,
