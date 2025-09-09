@@ -1,66 +1,45 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
+import { schema } from './graphql/schema';
 import process from 'process';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+
+import { connectDB } from './config/db';
+import { createYoga } from 'graphql-yoga';
 
 const app = express();
 const PORT: number = process.env.PORT ? Number(process.env.PORT) : 4000;
 
-// Middleware
-app.use(express.json());
+async function startServer() {
 
-// Routes
-app.get('/', (req: Request, res: Response) => {
-  res.json({
-    message: 'Welcome to Movies Weather Backend API',
-    version: '1.0.0',
-    endpoints: {
-      health: '/health',
-      api: '/api',
-      movies: '/api/movies',
-      weather: '/api/weather',
+  await connectDB();
+
+  const typeDefs = `
+    type Query {
+      hello: String
+    }
+  `;
+
+  const resolvers = {
+    Query: {
+      hello: () => 'Hello world!',
     },
-  });
-});
+  };
 
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'OK',
-    message: 'Movies Weather Backend is running',
-    timestamp: new Date().toISOString(),
+  const schema = makeExecutableSchema({
+    typeDefs,
+    resolvers,
   });
-});
 
-app.get('/api', (req: Request, res: Response) => {
-  res.json({
-    message: 'API is working!',
-    availableEndpoints: [
-      'GET /',
-      'GET /health',
-      'GET /api',
-      'GET /api/movies',
-      'GET /api/weather',
-    ],
+  const server = createYoga({
+    schema,
   });
-});
 
-// Movies routes
-app.get('/api/movies', (req: Request, res: Response) => {
-  res.json({
-    message: 'Movies endpoint - Coming soon!',
-    data: [],
+  app.use('/graphql', server);
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
-});
+}
 
-// Weather routes
-app.get('/api/weather', (req: Request, res: Response) => {
-  res.json({
-    message: 'Weather endpoint - Coming soon!',
-    data: [],
-  });
-});
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-  console.log(`📊 API available at: http://localhost:${PORT}`);
-  console.log(`🏥 Health check: http://localhost:${PORT}/health`);
-});
+startServer();
