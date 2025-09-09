@@ -1,7 +1,6 @@
+import User from "../models/userSchema";
 
-import User from "../../models/userSchema";
-
-export default {
+export const resolvers = {
   Query: {
     getUser: async (_: any, { id }: { id: string }) => {
       return await User.findById(id);
