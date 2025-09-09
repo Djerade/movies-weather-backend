@@ -14,25 +14,10 @@ async function startServer() {
 
   await connectDB();
 
-  const typeDefs = `
-    type Query {
-      hello: String
-    }
-  `;
 
-  const resolvers = {
-    Query: {
-      hello: () => 'Hello world!',
-    },
-  };
-
-  const schema = makeExecutableSchema({
-    typeDefs,
-    resolvers,
-  });
 
   const server = createYoga({
-    schema,
+    schema: schema,
   });
 
   app.use('/graphql', server);

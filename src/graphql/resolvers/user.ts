@@ -9,16 +9,8 @@ export default {
     getAllUsers: async () => {
       return await User.find();
     },
-    addUser: async (_, { name, email, password }) => {
-      return await User.create({ name, email, password });
-    },
-    updateUser: async (_, { id, name, email, password }) => {
-      return await User.findByIdAndUpdate(id, { name, email, password });
-    },
-    deleteUser: async (_, { id }) => {
-      return await User.findByIdAndDelete(id);
-    },
   },
+ 
   Mutation: {
     addUser: async (_, { name, email, password }) => {
       return await User.create({ name, email, password });
@@ -37,5 +29,5 @@ export default {
     deleteUser: async (_, { id }) => {
       return await User.findByIdAndDelete(id);
     },
-  },
+  }
 };
