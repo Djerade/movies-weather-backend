@@ -15,15 +15,19 @@
   "dependencies": {
     "@graphql-tools/schema": "^10.0.25",
     "@types/mongoose": "^5.11.96",
+    "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "graphql": "^16.11.0",
     "graphql-tag": "^2.12.6",
     "graphql-yoga": "^5.15.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.1",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",

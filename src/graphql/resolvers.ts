@@ -1,4 +1,5 @@
-import User from "../models/userSchema";
+import { User } from "../models/User";
+import { AuthService } from "../services/authService";
 
 export const resolvers = {
   Query: {
@@ -11,22 +12,32 @@ export const resolvers = {
   },
  
   Mutation: {
-    addUser: async (_, { name, email, password }) => {
-      return await User.create({ name, email, password });
-    },
-    updateUser: async (_, { id, name, email, password }) => {
-      const user = await User.findById(id);
-      if (!user) {
-        throw new Error("User not found");
+    signup: async (_, { name, email, password, city }) => {
+      if (!name || !email || !password || !city) {
+        throw new Error("All fields are required");
       }
-      if (name !== undefined) user.name = name;
-      if (email !== undefined) user.email = email;
-      if (password !== undefined) user.password = password;
-      await user.save();
-      return user;
-    },
-    deleteUser: async (_, { id }) => {
-      return await User.findByIdAndDelete(id);
+      const user = await User.findOne({ email });
+      if (user) {
+        throw new Error("User already exists");
+      }
+      try {
+
+  
+        const user = new User({
+          email: email.toLowerCase(),
+          password: password,
+          name: name,
+          city: city,
+        });
+        await user.save();
+
+        const token = AuthService.generateToken(user);
+
+
+        return { user, token };
+      } catch (error) {
+        throw new Error("Error signing up"+ error);
+      }
     },
   }
 };

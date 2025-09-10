@@ -6,6 +6,7 @@ export const typeDefs = gql`
     name: String!
     email: String!
     password: String!
+    city: String!
   }
 
   type Query {
@@ -14,8 +15,6 @@ export const typeDefs = gql`
   }
 
   type Mutation {
-    addUser(name: String!, email: String!, password: String!): User!
-    updateUser(id: ID!, name: String, email: String, password: String): User!
-    deleteUser(id: ID!): User!
+    signup(name: String!, email: String!, password: String!): User!
   }
 `;

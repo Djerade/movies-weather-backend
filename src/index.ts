@@ -22,11 +22,28 @@ async function startServer() {
     resolvers,
   });
 
-  const server = createYoga({
+  const yoga = createYoga({
     schema: schema,
+    context: ({ req, res }: { req: Request; res: Response }) => ({
+      req,
+      res,
+    }),
   });
 
-  app.use('/graphql', server);
+  app.all('/graphql', async (req, res) => {
+    const response = await yoga.fetch(req.url, {
+      method: req.method,
+      headers: req.headers as any,
+      body: req.method === 'POST' ? JSON.stringify(req.body) : undefined,
+    });
+    
+    const responseText = await response.text();
+    res.status(response.status);
+    response.headers.forEach((value, key) => {
+      res.setHeader(key, value);
+    });
+    res.send(responseText);
+  });
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
