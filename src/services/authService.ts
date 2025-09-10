@@ -22,7 +22,6 @@ export class AuthService {
       userId: (user._id as any).toString(),
       email: user.email,
     };
-
     return jwt.sign(payload, config.jwtSecret, {
       expiresIn: '7d',
     });

@@ -1,8 +1,10 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IUser {
   [x: string]: any;
+  _id?: Types.ObjectId;
+  id?: string;
   name: string;
   email: string;
   password: string;
@@ -35,6 +37,11 @@ const userSchema = new Schema<IUser>({
     trim: true,
     minlength: [2, 'City must be at least 2 characters long'],
   },
+});
+
+// Virtual getter pour transformer _id en id
+userSchema.virtual('id').get(function() {
+  return this._id?.toString();
 });
 
 

@@ -29,12 +29,18 @@ export const resolvers = {
           name: name,
           city: city,
         });
+        
         await user.save();
 
         const token = AuthService.generateToken(user);
+        console.log(token);
+        
 
-
-        return { user, token };
+        return { 
+          id: user._id,
+          ...user._doc,
+          token: token 
+        };
       } catch (error) {
         throw new Error("Error signing up"+ error);
       }

@@ -11,6 +11,9 @@ import { createYoga } from 'graphql-yoga';
 const app = express();
 const PORT: number = process.env.PORT ? Number(process.env.PORT) : 4000;
 
+// Middleware pour parser le JSON
+app.use(express.json());
+
 async function startServer() {
 
   await connectDB();
@@ -31,10 +34,16 @@ async function startServer() {
   });
 
   app.all('/graphql', async (req, res) => {
+    let body = '';
+    
+    if (req.method === 'POST') {
+      body = JSON.stringify(req.body);
+    }
+    
     const response = await yoga.fetch(req.url, {
       method: req.method,
       headers: req.headers as any,
-      body: req.method === 'POST' ? JSON.stringify(req.body) : undefined,
+      body: body || undefined,
     });
     
     const responseText = await response.text();
