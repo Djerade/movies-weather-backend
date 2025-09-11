@@ -1,13 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { IUser } from '../models/User';
-import {config} from '../config/env'
+import { config } from '../config/env';
 
 export interface AuthPayload {
   userId: string;
   email: string;
 }
-
-
 
 export interface SignupInput {
   email: string;
@@ -26,5 +24,4 @@ export class AuthService {
       expiresIn: '7d',
     });
   }
-
 }

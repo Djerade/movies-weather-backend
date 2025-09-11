@@ -1,5 +1,6 @@
 import { User } from "../models/User";
 import { AuthService } from "../services/authService";
+import { MailerService } from "../services/mailer";
 
 export const resolvers = {
   Query: {
@@ -33,7 +34,20 @@ export const resolvers = {
         await user.save();
 
         const token = AuthService.generateToken(user);
-        console.log(token);
+
+
+                // Send welcome email
+                try {
+                  await MailerService.sendWelcomeEmail({
+                    name: user.name,
+                    email: user.email,
+                    city: user.city,
+                  });
+                } catch (emailError) {
+                  console.error('Failed to send welcome email:', emailError);
+                  // Don't fail the signup if email fails
+                }
+        
         
 
         return { 

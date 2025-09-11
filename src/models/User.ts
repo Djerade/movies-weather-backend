@@ -18,7 +18,10 @@ const userSchema = new Schema<IUser>({
     unique: true,
     lowercase: true,
     trim: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email'],
+    match: [
+      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      'Please enter a valid email',
+    ],
   },
   password: {
     type: String,
@@ -40,15 +43,14 @@ const userSchema = new Schema<IUser>({
 });
 
 // Virtual getter pour transformer _id en id
-userSchema.virtual('id').get(function() {
+userSchema.virtual('id').get(function () {
   return this._id?.toString();
 });
-
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-  
+
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);

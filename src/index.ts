@@ -15,10 +15,7 @@ const PORT: number = process.env.PORT ? Number(process.env.PORT) : 4000;
 app.use(express.json());
 
 async function startServer() {
-
   await connectDB();
-
-
 
   const schema = makeExecutableSchema({
     typeDefs,
@@ -35,17 +32,17 @@ async function startServer() {
 
   app.all('/graphql', async (req, res) => {
     let body = '';
-    
+
     if (req.method === 'POST') {
       body = JSON.stringify(req.body);
     }
-    
+
     const response = await yoga.fetch(req.url, {
       method: req.method,
       headers: req.headers as any,
       body: body || undefined,
     });
-    
+
     const responseText = await response.text();
     res.status(response.status);
     response.headers.forEach((value, key) => {

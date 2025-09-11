@@ -9,4 +9,10 @@ export const config = {
   mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/movies_app',
   jwtSecret: process.env.JWT_SECRET || 'perfect',
 
+    // Email configuration
+    sendgrid: {
+      apiKey: process.env.SENDGRID_API_KEY || '',
+      fromEmail: process.env.SENDGRID_FROM_EMAIL || 'no-reply@yourdomain.com',
+      welcomeTemplateId: process.env.SENDGRID_WELCOME_TEMPLATE_ID,
+    },
 };
