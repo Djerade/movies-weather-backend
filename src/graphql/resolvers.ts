@@ -1,6 +1,7 @@
 import { User } from "../models/User";
 import { AuthService } from "../services/authService";
 import { MailerService } from "../services/mailer";
+import { MovieService } from "../services/movieService";
 
 export const resolvers = {
   Query: {
@@ -9,6 +10,19 @@ export const resolvers = {
     },
     getAllUsers: async () => {
       return await User.find();
+    },
+    searchMovies: async (_: any, { query, page = 1 }: { query: string; page?: number }) => {
+      const result = await MovieService.searchMovies(query, page);
+      return {
+        search: result.Search,
+        totalResults: result.totalResults,
+      };
+    },
+    getMovieById: async (_: any, { imdbId }: { imdbId: string }) => {
+      return await MovieService.getMovieById(imdbId);
+    },
+    getMovieByTitle: async (_: any, { title }: { title: string }) => {
+      return await MovieService.getMovieByTitle(title);
     },
   },
  
