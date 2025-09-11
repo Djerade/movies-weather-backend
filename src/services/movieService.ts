@@ -126,6 +126,7 @@ export class MovieService {
         throw new Error(response.data.Error || 'Failed to fetch movies');
       }
 
+      console.log('OMDB Response structure:', JSON.stringify(response.data, null, 2));
       return response.data;
     } catch (error) {
       console.error('Error fetching all movies:', error);

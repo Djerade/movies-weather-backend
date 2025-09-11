@@ -14,7 +14,13 @@ export const resolvers = {
     searchMovies: async (_: any, { query, page = 1 }: { query: string; page?: number }) => {
       const result = await MovieService.searchMovies(query, page);
       return {
-        search: result.Search,
+        search: result.Search.map((movie: any) => ({
+          title: movie.Title,
+          year: movie.Year,
+          imdbID: movie.imdbID,
+          type: movie.Type,
+          poster: movie.Poster,
+        })),
         totalResults: result.totalResults,
       };
     },
@@ -27,7 +33,13 @@ export const resolvers = {
     getAllMovies: async (_: any, { page = 1 }: { page?: number }) => {
       const result = await MovieService.getAllMovies(page);
       return {
-        search: result.Search,
+        search: result.Search.map((movie: any) => ({
+          title: movie.Title,
+          year: movie.Year,
+          imdbID: movie.imdbID,
+          type: movie.Type,
+          poster: movie.Poster,
+        })),
         totalResults: result.totalResults,
       };
     },
