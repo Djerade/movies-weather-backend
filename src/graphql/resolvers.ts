@@ -4,7 +4,7 @@ import { MailerService } from '../services/mailer';
 
 export const resolvers = {
   Query: {
-    getUser: async (_: any, { id }: { id: string }) => {
+    getUser: async (_: unknown, { id }: { id: string }) => {
       return await User.findById(id);
     },
     getAllUsers: async () => {
