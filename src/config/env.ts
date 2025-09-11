@@ -8,6 +8,7 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/movies_app',
   jwtSecret: process.env.JWT_SECRET || 'perfect',
+  omdbApiKey: process.env.OMDB_API_KEY || 'e3acecd',
 
   // Email configuration
   sendgrid: {
