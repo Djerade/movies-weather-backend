@@ -24,4 +24,12 @@ export class AuthService {
       expiresIn: '7d',
     });
   }
+
+  static verifyToken(token: string): AuthPayload {
+    try {
+      return jwt.verify(token, config.jwtSecret) as AuthPayload;
+    } catch (error) {
+      throw new Error('Invalid or expired token');
+    }
+  }
 }

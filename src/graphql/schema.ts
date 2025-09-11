@@ -21,5 +21,7 @@ export const typeDefs = gql`
       password: String!
       city: String!
     ): User!
+
+    login(email: String!, password: String!): User!
   }
 `;
