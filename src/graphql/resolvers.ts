@@ -1,12 +1,10 @@
-import { log } from 'console';
 import { User } from '../models/User';
 import { AuthService } from '../services/authService';
 import { MailerService } from '../services/mailer';
-import bcrypt from 'bcryptjs';
 
 export const resolvers = {
   Query: {
-    getUser: async (_: any, { id }: { id: string }) => {
+    getUser: async (_: unknown, { id }: { id: string }) => {
       return await User.findById(id);
     },
     getAllUsers: async () => {
@@ -58,7 +56,6 @@ export const resolvers = {
     },
 
     login: async (_, { email, password }) => {
-
       if (!email || !password) {
         throw new Error('Email and password are required');
       }
@@ -76,7 +73,6 @@ export const resolvers = {
         }
 
         const token = AuthService.generateToken(user);
-    
 
         return {
           id: user._id,
