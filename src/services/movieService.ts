@@ -109,4 +109,27 @@ export class MovieService {
       throw new Error('Failed to fetch movie details');
     }
   }
+
+  static async getAllMovies(page: number = 1): Promise<SearchResult> {
+    try {
+      // Utiliser une recherche générique pour récupérer des films populaires
+      const response = await axios.get(this.BASE_URL, {
+        params: {
+          apikey: config.omdbApiKey,
+          s: 'movie', // Terme générique pour récupérer des films
+          page: page,
+          type: 'movie', // S'assurer que nous récupérons seulement des films
+        },
+      });
+
+      if (response.data.Response === 'False') {
+        throw new Error(response.data.Error || 'Failed to fetch movies');
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all movies:', error);
+      throw new Error('Failed to fetch movies');
+    }
+  }
 }

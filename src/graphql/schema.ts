@@ -60,6 +60,7 @@ export const typeDefs = gql`
     searchMovies(query: String!, page: Int): MovieSearchResponse!
     getMovieById(imdbId: String!): Movie!
     getMovieByTitle(title: String!): Movie!
+    getAllMovies(page: Int): MovieSearchResponse!
   }
 
   type Mutation {

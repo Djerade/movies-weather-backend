@@ -24,6 +24,13 @@ export const resolvers = {
     getMovieByTitle: async (_: any, { title }: { title: string }) => {
       return await MovieService.getMovieByTitle(title);
     },
+    getAllMovies: async (_: any, { page = 1 }: { page?: number }) => {
+      const result = await MovieService.getAllMovies(page);
+      return {
+        search: result.Search,
+        totalResults: result.totalResults,
+      };
+    },
   },
 
   Mutation: {
