@@ -9,6 +9,7 @@ export interface IUser {
   email: string;
   password: string;
   city: string;
+  favoriteMovies: string[]; // Array of IMDb IDs
 }
 
 const userSchema = new Schema<IUser>({
@@ -39,6 +40,10 @@ const userSchema = new Schema<IUser>({
     required: [true, 'City is required'],
     trim: true,
     minlength: [2, 'City must be at least 2 characters long'],
+  },
+  favoriteMovies: {
+    type: [String],
+    default: [],
   },
 });
 
