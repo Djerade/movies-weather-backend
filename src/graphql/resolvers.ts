@@ -4,14 +4,7 @@ import { AuthService } from '../services/authService';
 import { MailerService } from '../services/mailer';
 import { MovieService } from '../services/movieService';
 import { WeatherService } from '../services/weatherService';
-
-interface GraphQLContext {
-  user?: {
-    id: string;
-    email: string;
-    city: string;
-  };
-}
+import { GraphQLContext } from './context';
 
 export const resolvers = {
   Query: {
@@ -157,16 +150,20 @@ export const resolvers = {
       { city }: { city?: string },
       context: GraphQLContext
     ) => {
-      // Si l'utilisateur est connecté, utiliser sa ville par défaut
-      if (context.user) {
-        const targetCity = city || context.user.city;
-        try {
-          return await WeatherService.getCurrentWeather(targetCity);
-        } catch (error) {
-          throw new Error(
-            `Failed to fetch weather: ${error instanceof Error ? error.message : 'Unknown error'}`
-          );
-        }
+      // Authentification obligatoire
+      if (!context.user) {
+        throw new Error('Authentication required to access weather data');
+      }
+
+      // Utiliser la ville de l'utilisateur connecté ou la ville spécifiée
+      const targetCity = city || context.user.city;
+
+      try {
+        return await WeatherService.getCurrentWeather(targetCity);
+      } catch (error) {
+        throw new Error(
+          `Failed to fetch weather: ${error instanceof Error ? error.message : 'Unknown error'}`
+        );
       }
     },
   },
