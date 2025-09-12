@@ -150,7 +150,7 @@ export const resolvers = {
       //   throw new Error('Authentication required');
       // }
 
-      const targetCity = city || 'Paris'; // Ville par défaut pour les tests
+      const targetCity = city || 'Accra'; // Ville par défaut pour les tests
 
       try {
         return await WeatherService.getCurrentWeather(targetCity);
