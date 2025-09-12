@@ -4,7 +4,8 @@ export const db = mongoose;
 
 export const connectDB = async (): Promise<void> => {
   try {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/movies-weather';
+    const mongoUri =
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/movies-weather';
     await mongoose.connect(mongoUri);
     console.log('📦 Connected to MongoDB');
   } catch (error) {
