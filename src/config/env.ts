@@ -16,4 +16,10 @@ export const config = {
     fromEmail: process.env.SENDGRID_FROM_EMAIL || 'no-reply@yourdomain.com',
     welcomeTemplateId: process.env.SENDGRID_WELCOME_TEMPLATE_ID,
   },
+
+  // Weather configuration
+  weather: {
+    apiKey:
+      process.env.OPENWEATHER_API_KEY || '2dad191f607e5a57be39b2158fc5df90',
+  },
 };

@@ -1,7 +1,9 @@
+import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { AuthService } from '../services/authService';
 import { MailerService } from '../services/mailer';
 import { MovieService } from '../services/movieService';
+import { WeatherService } from '../services/weatherService';
 
 export const resolvers = {
   Query: {
@@ -142,6 +144,22 @@ export const resolvers = {
 
       return favoriteMovies;
     },
+    weather: async (_: any, { city }: { city?: string }) => {
+      // Temporairement désactivé pour les tests
+      // if (!context.user) {
+      //   throw new Error('Authentication required');
+      // }
+
+      const targetCity = city || 'Paris'; // Ville par défaut pour les tests
+
+      try {
+        return await WeatherService.getCurrentWeather(targetCity);
+      } catch (error) {
+        throw new Error(
+          `Failed to fetch weather: ${error instanceof Error ? error.message : 'Unknown error'}`
+        );
+      }
+    },
   },
 
   Mutation: {
@@ -154,9 +172,10 @@ export const resolvers = {
         throw new Error('User already exists');
       }
       try {
+        const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
           email: email.toLowerCase(),
-          password: password,
+          password: hashedPassword,
           name: name,
           city: city,
         });

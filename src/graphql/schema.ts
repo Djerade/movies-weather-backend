@@ -10,6 +10,15 @@ export const typeDefs = gql`
     favoriteMovies: [String!]!
   }
 
+  type AuthPayload {
+    id: ID!
+    name: String!
+    email: String!
+    city: String!
+    favoriteMovies: [String!]!
+    token: String!
+  }
+
   type Movie {
     title: String!
     year: String!
@@ -55,6 +64,23 @@ export const typeDefs = gql`
     totalResults: String!
   }
 
+  type Weather {
+    city: String!
+    country: String!
+    temperature: Float!
+    feelsLike: Float!
+    humidity: Int!
+    pressure: Int!
+    description: String!
+    icon: String!
+    windSpeed: Float!
+    windDirection: Int!
+    visibility: Int!
+    uvIndex: Float!
+    sunrise: String!
+    sunset: String!
+  }
+
   type Query {
     getUser(id: ID!): User!
     getAllUsers: [User!]!
@@ -64,6 +90,7 @@ export const typeDefs = gql`
     getAllMovies(page: Int): MovieSearchResponse!
     getFavoriteMovies(userId: ID!): [Movie!]!
     searchFavoriteMovies(userId: ID!, query: String!): [Movie!]!
+    weather(city: String): Weather!
   }
 
   type Mutation {
@@ -72,9 +99,9 @@ export const typeDefs = gql`
       email: String!
       password: String!
       city: String!
-    ): User!
+    ): AuthPayload!
 
-    login(email: String!, password: String!): User!
+    login(email: String!, password: String!): AuthPayload!
 
     addFavoriteMovie(userId: ID!, imdbId: String!): User!
     removeFavoriteMovie(userId: ID!, imdbId: String!): User!
