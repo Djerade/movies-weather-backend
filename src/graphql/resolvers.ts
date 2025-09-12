@@ -5,6 +5,14 @@ import { MailerService } from '../services/mailer';
 import { MovieService } from '../services/movieService';
 import { WeatherService } from '../services/weatherService';
 
+interface GraphQLContext {
+  user?: {
+    id: string;
+    email: string;
+    city: string;
+  };
+}
+
 export const resolvers = {
   Query: {
     getUser: async (_: unknown, { id }: { id: string }) => {
@@ -144,20 +152,21 @@ export const resolvers = {
 
       return favoriteMovies;
     },
-    weather: async (_: any, { city }: { city?: string }) => {
-      // Temporairement désactivé pour les tests
-      // if (!context.user) {
-      //   throw new Error('Authentication required');
-      // }
-
-      const targetCity = city || 'Accra'; // Ville par défaut pour les tests
-
-      try {
-        return await WeatherService.getCurrentWeather(targetCity);
-      } catch (error) {
-        throw new Error(
-          `Failed to fetch weather: ${error instanceof Error ? error.message : 'Unknown error'}`
-        );
+    weather: async (
+      _: any,
+      { city }: { city?: string },
+      context: GraphQLContext
+    ) => {
+      // Si l'utilisateur est connecté, utiliser sa ville par défaut
+      if (context.user) {
+        const targetCity = city || context.user.city;
+        try {
+          return await WeatherService.getCurrentWeather(targetCity);
+        } catch (error) {
+          throw new Error(
+            `Failed to fetch weather: ${error instanceof Error ? error.message : 'Unknown error'}`
+          );
+        }
       }
     },
   },
