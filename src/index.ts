@@ -1,19 +1,15 @@
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import 'dotenv/config';
-import express from 'express';
+import { createYoga } from 'graphql-yoga';
+import { createServer } from 'http';
 import process from 'process';
+import { connectDB } from './config/db';
 import { resolvers } from './graphql/resolvers';
 import { typeDefs } from './graphql/schema';
+import { User } from './models/User';
+import { AuthService } from './services/authService';
 
-import { createYoga } from 'graphql-yoga';
-import { connectDB } from './config/db';
-import { createContext } from './graphql/context';
-
-const app = express();
 const PORT: number = process.env.PORT ? Number(process.env.PORT) : 4000;
-
-// Middleware pour parser le JSON
-app.use(express.json());
 
 async function startServer() {
   await connectDB();
@@ -25,31 +21,56 @@ async function startServer() {
 
   const yoga = createYoga({
     schema: schema,
-    context: createContext,
+    context: async ({ request }: { request: any }) => {
+      // Extraire les en-têtes de la requête Web API
+      const authHeader = request.headers.get('authorization');
+      let user = null;
+
+      console.log('=== CONTEXT CREATION ===');
+      console.log(
+        'Authorization header:',
+        authHeader ? '[PRESENT]' : '[MISSING]'
+      );
+
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        console.log('Token extracted:', token ? '[PRESENT]' : '[MISSING]');
+        console.log('Token length:', token?.length || 0);
+
+        try {
+          const payload = AuthService.verifyToken(token);
+          console.log('✅ Token verified successfully');
+          console.log('Payload userId:', payload.userId);
+
+          const userData = await User.findById(payload.userId);
+          if (userData) {
+            user = {
+              id: userData._id?.toString(),
+              email: userData.email,
+              city: userData.city,
+            };
+            console.log('✅ User context created:', user.email, user.city);
+          } else {
+            console.log('❌ User not found in database');
+          }
+        } catch (error) {
+          console.log('❌ Invalid token:', error);
+        }
+      } else {
+        console.log('❌ No Bearer token found');
+      }
+
+      return {
+        req: {} as any,
+        res: {} as any,
+        user,
+      };
+    },
   });
 
-  app.all('/graphql', async (req, res) => {
-    let body = '';
+  const server = createServer(yoga);
 
-    if (req.method === 'POST') {
-      body = JSON.stringify(req.body);
-    }
-
-    const response = await yoga.fetch(req.url, {
-      method: req.method,
-      headers: req.headers as Record<string, string>,
-      body: body || undefined,
-    });
-
-    const responseText = await response.text();
-    res.status(response.status);
-    response.headers.forEach((value, key) => {
-      res.setHeader(key, value);
-    });
-    res.send(responseText);
-  });
-
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
 }

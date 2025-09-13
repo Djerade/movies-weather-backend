@@ -9,6 +9,7 @@ export interface IUser {
   password: string;
   city: string;
   favoriteMovies: string[]; // Array of IMDb IDs
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<IUser>({
