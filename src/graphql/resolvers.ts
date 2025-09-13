@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { AuthService } from '../services/authService';
 import { MailerService } from '../services/mailer';
@@ -8,10 +7,24 @@ import { GraphQLContext } from './context';
 
 export const resolvers = {
   Query: {
-    getUser: async (_: unknown, { id }: { id: string }) => {
+    getUser: async (
+      _: unknown,
+      { id }: { id: string },
+      context: GraphQLContext
+    ) => {
+      // Authentification obligatoire
+      if (!context.user) {
+        throw new Error('Authentication required to access user data');
+      }
+
       return await User.findById(id);
     },
-    getAllUsers: async () => {
+    getAllUsers: async (_: unknown, __: unknown, context: GraphQLContext) => {
+      // Authentification obligatoire
+      if (!context.user) {
+        throw new Error('Authentication required to access user data');
+      }
+
       return await User.find();
     },
     searchMovies: async (
@@ -49,7 +62,16 @@ export const resolvers = {
         totalResults: result.totalResults,
       };
     },
-    getFavoriteMovies: async (_: any, { userId }: { userId: string }) => {
+    getFavoriteMovies: async (
+      _: any,
+      { userId }: { userId: string },
+      context: GraphQLContext
+    ) => {
+      // Authentification obligatoire
+      if (!context.user) {
+        throw new Error('Authentication required to access favorite movies');
+      }
+
       const user = await User.findById(userId);
       if (!user) {
         throw new Error('User not found');
@@ -95,8 +117,14 @@ export const resolvers = {
     },
     searchFavoriteMovies: async (
       _: any,
-      { userId, query }: { userId: string; query: string }
+      { userId, query }: { userId: string; query: string },
+      context: GraphQLContext
     ) => {
+      // Authentification obligatoire
+      if (!context.user) {
+        throw new Error('Authentication required to search favorite movies');
+      }
+
       const user = await User.findById(userId);
       if (!user) {
         throw new Error('User not found');
@@ -139,7 +167,6 @@ export const resolvers = {
           }
         } catch (error) {
           console.error(`Error fetching movie ${imdbId}:`, error);
-          // Continue with other movies even if one fails
         }
       }
 
@@ -178,15 +205,16 @@ export const resolvers = {
         throw new Error('User already exists');
       }
       try {
-        const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
           email: email.toLowerCase(),
-          password: hashedPassword,
+          password: password,
           name: name,
           city: city,
         });
 
         await user.save();
+        console.log('✅ User created successfully:', user.email);
+        console.log('Password hash length after save:', user.password.length);
 
         const token = AuthService.generateToken(user);
 
@@ -216,24 +244,43 @@ export const resolvers = {
     },
 
     login: async (_, { email, password }) => {
+      console.log('=== LOGIN ATTEMPT ===');
+      console.log('Email received:', email);
+      console.log('Password received:', password ? '[PROVIDED]' : '[MISSING]');
+
       if (!email || !password) {
+        console.log('Missing email or password');
         throw new Error('Email and password are required');
       }
 
       try {
         // Trouver l'utilisateur par email
-        const user = await User.findOne({ email: email.toLowerCase() });
+        const searchEmail = email.toLowerCase();
+        console.log('Searching for user with email:', searchEmail);
+
+        const user = await User.findOne({ email: searchEmail });
         if (!user) {
+          console.log('❌ User not found for email:', searchEmail);
           throw new Error('Invalid email or password');
         }
 
-        const isPasswordValid = await (user as any).comparePassword(password);
+        console.log('✅ User found:', user.email);
+        console.log('Password hash exists:', !!user.password);
+        console.log('Password hash length:', user.password?.length || 0);
+
+        console.log('Comparing password...');
+        const isPasswordValid = await user.comparePassword(password);
+        console.log('Password validation result:', isPasswordValid);
+
         if (!isPasswordValid) {
+          console.log('❌ Password validation failed');
           throw new Error('Invalid email or password');
         }
+
+        console.log('✅ Password validation successful');
 
         const token = AuthService.generateToken(user);
-
+        console.log(token);
         return {
           id: user._id,
           name: user.name,
@@ -249,8 +296,14 @@ export const resolvers = {
 
     addFavoriteMovie: async (
       _,
-      { userId, imdbId }: { userId: string; imdbId: string }
+      { userId, imdbId }: { userId: string; imdbId: string },
+      context: GraphQLContext
     ) => {
+      // Authentification obligatoire
+      if (!context.user) {
+        throw new Error('Authentication required to add favorite movies');
+      }
+
       try {
         const user = await User.findById(userId);
         if (!user) {
@@ -281,8 +334,14 @@ export const resolvers = {
 
     removeFavoriteMovie: async (
       _,
-      { userId, imdbId }: { userId: string; imdbId: string }
+      { userId, imdbId }: { userId: string; imdbId: string },
+      context: GraphQLContext
     ) => {
+      // Authentification obligatoire
+      if (!context.user) {
+        throw new Error('Authentication required to remove favorite movies');
+      }
+
       try {
         const user = await User.findById(userId);
         if (!user) {
