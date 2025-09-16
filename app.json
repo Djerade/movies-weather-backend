@@ -1,0 +1,59 @@
+{
+  "name": "Movies Weather Backend",
+  "description": "Backend API for Movies + Weather App with GraphQL",
+  "repository": "https://github.com/yourusername/movies-weather-backend",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "keywords": ["node", "express", "graphql", "mongodb", "typescript"],
+  "image": "heroku/nodejs",
+  "stack": "heroku-22",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment",
+      "value": "production"
+    },
+    "PORT": {
+      "description": "Port for the server",
+      "value": "4000"
+    },
+    "MONGODB_URI": {
+      "description": "MongoDB connection string",
+      "required": true
+    },
+    "JWT_SECRET": {
+      "description": "JWT secret key",
+      "required": true
+    },
+    "OMDB_API_KEY": {
+      "description": "OMDB API key for movie data",
+      "required": true
+    },
+    "SENDGRID_API_KEY": {
+      "description": "SendGrid API key for emails",
+      "required": false
+    },
+    "SENDGRID_FROM_EMAIL": {
+      "description": "SendGrid from email",
+      "required": false
+    },
+    "OPENWEATHER_API_KEY": {
+      "description": "OpenWeather API key",
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-mongolab:sandbox"
+    }
+  ]
+}

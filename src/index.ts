@@ -4,10 +4,9 @@ import { createYoga } from 'graphql-yoga';
 import { createServer } from 'http';
 import process from 'process';
 import { connectDB } from './config/db';
+import { createContext } from './graphql/context';
 import { resolvers } from './graphql/resolvers';
 import { typeDefs } from './graphql/schema';
-import { User } from './models/User';
-import { AuthService } from './services/authService';
 
 const PORT: number = process.env.PORT ? Number(process.env.PORT) : 4000;
 
@@ -22,49 +21,19 @@ async function startServer() {
   const yoga = createYoga({
     schema: schema,
     context: async ({ request }: { request: any }) => {
-      // Extraire les en-têtes de la requête Web API
-      const authHeader = request.headers.get('authorization');
-      let user = null;
+      // Convertir la Request Web API en objet Express-like
+      const req = {
+        headers: {
+          authorization: request.headers.get('authorization'),
+        },
+        method: request.method,
+        url: request.url,
+        body: request.body,
+      } as any;
 
-      console.log('=== CONTEXT CREATION ===');
-      console.log(
-        'Authorization header:',
-        authHeader ? '[PRESENT]' : '[MISSING]'
-      );
+      const res = {} as any;
 
-      if (authHeader && authHeader.startsWith('Bearer ')) {
-        const token = authHeader.substring(7);
-        console.log('Token extracted:', token ? '[PRESENT]' : '[MISSING]');
-        console.log('Token length:', token?.length || 0);
-
-        try {
-          const payload = AuthService.verifyToken(token);
-          console.log('✅ Token verified successfully');
-          console.log('Payload userId:', payload.userId);
-
-          const userData = await User.findById(payload.userId);
-          if (userData) {
-            user = {
-              id: userData._id?.toString(),
-              email: userData.email,
-              city: userData.city,
-            };
-            console.log('✅ User context created:', user.email, user.city);
-          } else {
-            console.log('❌ User not found in database');
-          }
-        } catch (error) {
-          console.log('❌ Invalid token:', error);
-        }
-      } else {
-        console.log('❌ No Bearer token found');
-      }
-
-      return {
-        req: {} as any,
-        res: {} as any,
-        user,
-      };
+      return await createContext({ req, res });
     },
   });
 

@@ -15,13 +15,6 @@ export interface GraphQLContext {
 export async function createContext(context: any): Promise<GraphQLContext> {
   const { req, res } = context;
 
-  console.log('=== CONTEXT CREATION ===');
-  console.log('Request exists:', !!req);
-  console.log(
-    'Request headers:',
-    req?.headers ? Object.keys(req.headers) : 'No headers'
-  );
-
   // Vérifier que req existe
   if (!req) {
     console.log('❌ No request object, returning empty context');
