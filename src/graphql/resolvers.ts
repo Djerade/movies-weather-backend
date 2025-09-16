@@ -109,7 +109,6 @@ export const resolvers = {
           });
         } catch (error) {
           console.error(`Error fetching movie ${imdbId}:`, error);
-          // Continue with other movies even if one fails
         }
       }
 
@@ -213,8 +212,6 @@ export const resolvers = {
         });
 
         await user.save();
-        console.log('✅ User created successfully:', user.email);
-        console.log('Password hash length after save:', user.password.length);
 
         const token = AuthService.generateToken(user);
 
