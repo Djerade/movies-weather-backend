@@ -7,6 +7,7 @@ import { connectDB } from './config/db';
 import { createContext } from './graphql/context';
 import { resolvers } from './graphql/resolvers';
 import { typeDefs } from './graphql/schema';
+import { corsConfig } from './middleware/cors';
 
 const PORT: number = process.env.PORT ? Number(process.env.PORT) : 4000;
 
@@ -20,6 +21,7 @@ async function startServer() {
 
   const yoga = createYoga({
     schema: schema,
+    cors: corsConfig,
     context: async ({ request }: { request: any }) => {
       // Convertir la Request Web API en objet Express-like
       const req = {
