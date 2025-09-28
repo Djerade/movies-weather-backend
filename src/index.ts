@@ -23,11 +23,17 @@ async function startServer() {
     schema: schema,
     cors: corsConfig,
     context: async ({ request }: { request: any }) => {
-      // Convertir la Request Web API en objet Express-like
+      const headers: { [key: string]: string | string[] } = {};
+
+      // Debug: afficher tous les headers reçus
+      console.log('🔍 All request headers:');
+      request.headers.forEach((value: string, key: string) => {
+        headers[key.toLowerCase()] = value;
+        console.log(`  ${key}: ${value}`);
+      });
+
       const req = {
-        headers: {
-          authorization: request.headers.get('authorization'),
-        },
+        headers,
         method: request.method,
         url: request.url,
         body: request.body,
